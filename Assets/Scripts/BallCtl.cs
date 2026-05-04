@@ -35,13 +35,13 @@ public class BallCtl : MonoBehaviour
 	        if (transform.position.y > 1.0f){
 	            if (disd_flag) {
 	            	//落下予測地点を計算
-	            	setTargetPos( new Vector3(transform.position.x, 0.1f, transform.position.z) + DisDrag(transform.position, ballrigid.velocity, 0.25f, 9.80665f, 0.1f, 0.05f));
+	            	setTargetPos( new Vector3(transform.position.x, 0.1f, transform.position.z) + DisDrag(transform.position, ballrigid.linearVelocity, 0.25f, 9.80665f, 0.1f, 0.05f));
 	            	disd_flag = false;
 	            }
-	        } else if (ballrigid.velocity.magnitude> 5.0f) {
+	        } else if (ballrigid.linearVelocity.magnitude> 5.0f) {
 	        	//0.5秒後の位置を計算
 	            disd_flag = true;
-	            setTargetPos( new Vector3(transform.position.x + ballrigid.velocity.x * 0.5f, 0.1f, transform.position.z + ballrigid.velocity.z * 0.5f));
+	            setTargetPos( new Vector3(transform.position.x + ballrigid.linearVelocity.x * 0.5f, 0.1f, transform.position.z + ballrigid.linearVelocity.z * 0.5f));
 	        } else {
 	        	//現在の位置
 	            disd_flag = true;
@@ -111,7 +111,7 @@ public class BallCtl : MonoBehaviour
     void jmpPos()
     {
 	    jmpFlag = false;
-	    GetComponent<Rigidbody>().velocity = Vector3.zero;
+	    GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
 	    GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
     	transform.position = new Vector3(Random.Range(-GameManager.FieldXlen/2, GameManager.FieldXlen/2),10.0f,Random.Range(-GameManager.FieldZlen/2, GameManager.FieldZlen/2));
     	Debug.Log("BALL JUMP:" + transform.position);
@@ -175,7 +175,7 @@ public class BallCtl : MonoBehaviour
 	    Vector3     vec = ConvertVectorToVector3( speedVec, i_angle, i_targetPosition );
 	    
 	    // 速さベクトルのままAddForce()を渡してはいけないぞ。力(速さ×重さ)に変換するんだ
-	    GetComponent<Rigidbody>().velocity = Vector3.zero;
+	    GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
 	    Vector3 force   = vec * GetComponent<Rigidbody>().mass;
 	    GetComponent<Rigidbody>().AddForce( force, ForceMode.Impulse );
 	}

@@ -79,11 +79,11 @@ public class AIMove : MonoBehaviour {
 			pM.setDist(AiTeam.tgtPos[AInum]);
 			pM.setView(ball.GetComponent<BallCtl>().getViewPos());
 
-			if (rb.velocity.magnitude > 3.0f){
-				stamina -= rb.velocity.magnitude - 3.0f;
-				staminaMax -= (rb.velocity.magnitude - 3.0f)/ fatiguex;
-			} else if ((stamina < staminaMax)&&(rb.velocity.magnitude < 2.0f)) {
-				stamina += 2.5f - rb.velocity.magnitude;
+			if (rb.linearVelocity.magnitude > 3.0f){
+				stamina -= rb.linearVelocity.magnitude - 3.0f;
+				staminaMax -= (rb.linearVelocity.magnitude - 3.0f)/ fatiguex;
+			} else if ((stamina < staminaMax)&&(rb.linearVelocity.magnitude < 2.0f)) {
+				stamina += 2.5f - rb.linearVelocity.magnitude;
 			}
 			
 			if ((Vector3.Distance( ball.GetComponent<BallCtl>().targetPos, AiTeam.tgtPos[AInum])> 20.0f)&&(stamina < 300.0f)&&(stamina/staminaMax < 0.9f)) {
@@ -100,13 +100,13 @@ public class AIMove : MonoBehaviour {
 			stmSlider.value = stamina;
 			stmMaxSlider.value = staminaMax;
 		
-        	animator.SetFloat("Speed",rb.velocity.magnitude / 2.0f + 0.5f);
+        	animator.SetFloat("Speed",rb.linearVelocity.magnitude / 2.0f + 0.5f);
 		}
 		
 		// GKがキャッチ状態
 		if (isBallCatch){
 			keepTouch = 0;
-			ball.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+			ball.gameObject.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
 	    	ball.gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 			ball.gameObject.transform.position = transform.position + transform.forward * 0.25f + new Vector3(0.0f, 0.3f, 0.0f);
 			if ((AiTeam.Wpos2Tpos(ball.gameObject.transform.position).x > -30.0f)||(AiTeam.Wpos2Tpos(ball.gameObject.transform.position).x < -40.0f)){
@@ -158,7 +158,7 @@ public class AIMove : MonoBehaviour {
 	    	if (GameManager.isKick()){ //キックフラグON
 	    		var tgtObj = chkOptPass(AiTeam.players, 10.0f, 50.0f);
 		        if (tgtObj != null){
-	    			other.gameObject.GetComponent<BallCtl>().ShootByTime(tgtObj.transform.position + tgtObj.transform.forward * tgtObj.GetComponent<Rigidbody>().velocity.magnitude * 5.0f, 0.0f);
+	    			other.gameObject.GetComponent<BallCtl>().ShootByTime(tgtObj.transform.position + tgtObj.transform.forward * tgtObj.GetComponent<Rigidbody>().linearVelocity.magnitude * 5.0f, 0.0f);
 					Debug.Log("BYBYBY:" + AiTeam.getWgpos());
 	    		} else {
 	    			other.gameObject.GetComponent<BallCtl>().ShootByTime(AiTeam.getWgpos(), 0.0f);
@@ -172,7 +172,7 @@ public class AIMove : MonoBehaviour {
 		        if ((dir > -90.0f)&&(dir < 90.0f)){
 		    		var tgtObj = chkOptPass(AiTeam.players, 10.0f, 50.0f);
 			        if (tgtObj != null){
-		    			other.gameObject.GetComponent<BallCtl>().ShootByTime(tgtObj.transform.position + tgtObj.transform.forward * tgtObj.GetComponent<Rigidbody>().velocity.magnitude * 5.0f, 0.0f);
+		    			other.gameObject.GetComponent<BallCtl>().ShootByTime(tgtObj.transform.position + tgtObj.transform.forward * tgtObj.GetComponent<Rigidbody>().linearVelocity.magnitude * 5.0f, 0.0f);
 		    		} else {
 		    			other.gameObject.GetComponent<BallCtl>().ShootByTime(AiTeam.getWgpos(), 0.0f);
 		    		}
@@ -191,7 +191,7 @@ public class AIMove : MonoBehaviour {
 	    	} else if (( AInum == 0)&&( AiTeam.teamId != GameManager.isBallTeamId() )&&(AiTeam.Wpos2Tpos(other.gameObject.transform.position).x < -30.0f)) {  //GKの場合
 	    		//ボールキャッチ
 	    		isBallCatch = true;
-	    	    other.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+	    	    other.gameObject.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
 	    		other.gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 	    		GameManager.doGKCatch(true);
 	    		GkCoroutine = doGKkick(7.0f);
@@ -230,7 +230,7 @@ public class AIMove : MonoBehaviour {
 				    	}
 		        	} else {
 		        		StartCoroutine("stepStop");
-		        		other.gameObject.GetComponent<BallCtl>().ShootByTime(tgtObj.transform.position + tgtObj.transform.forward * tgtObj.GetComponent<Rigidbody>().velocity.magnitude * 5.0f, 0.0f);
+		        		other.gameObject.GetComponent<BallCtl>().ShootByTime(tgtObj.transform.position + tgtObj.transform.forward * tgtObj.GetComponent<Rigidbody>().linearVelocity.magnitude * 5.0f, 0.0f);
 		        	}
 	        	} else {
 		        	//if (other.gameObject.GetComponent<Rigidbody>().velocity.magnitude < 5.0f ){
@@ -330,7 +330,7 @@ public class AIMove : MonoBehaviour {
 		if (isBallCatch){
 		    isBallCatch = false;
 		    GameManager.doGKCatch(false);
-		    ball.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+		    ball.gameObject.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
 		    ball.gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 		    ball.gameObject.GetComponent<BallCtl>().ShootByTime(transform.position + transform.forward * 1.0f, 0.0f);
 		    forceKick = true;

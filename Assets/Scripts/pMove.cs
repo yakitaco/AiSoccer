@@ -73,7 +73,7 @@ public class pMove : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rb.velocity= new Vector3(0.0f, 2.0f, 0.0f);
+        rb.linearVelocity= new Vector3(0.0f, 2.0f, 0.0f);
     }
 
     // Update is called once per frame
@@ -155,8 +155,8 @@ public class pMove : MonoBehaviour
             //rb.AddForce (force);  // 力を加える
             //rb.AddForce(transform.forward, ForceMode.Impulse);
             //move = transform.forward * spd;
-            move.y = rb.velocity.y;
-            rb.velocity = move;//(transform.forward * 100.0f) * Time.fixedDeltaTime;
+            move.y = rb.linearVelocity.y;
+            rb.linearVelocity = move;//(transform.forward * 100.0f) * Time.fixedDeltaTime;
             //spd = spd / Time.deltaTime;
     }
     

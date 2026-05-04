@@ -181,7 +181,7 @@ public class GameManager : MonoBehaviour
     //ボールをdelay秒後に指定位置に置く
     IEnumerator DelayMethod(BallCtl ball, float delay, Vector3 pos) {
         yield return new WaitForSeconds(delay);
-        ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        ball.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
 	    ball.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
     	ball.transform.position = pos;
     	isInplayFlg = true;
