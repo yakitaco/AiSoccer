@@ -47,20 +47,20 @@ public class pMove : MonoBehaviour
     {
         get
         {
-            return DistanceXZ(destination, transform.position) <= stopDistance;
+            return SqrDistanceXZ(destination, transform.position) <= stopDistance * stopDistance;
         }
     }
     
     /// <summary>
-    /// XZのみの距離を返します。
+    /// XZのみの2乗距離を返します。
     /// </summary>
     /// <param name="src">元座標</param>
     /// <param name="dst">先座標</param>
-    /// <returns>高さの差を考慮しない距離</returns>
-    public float DistanceXZ(Vector3 src, Vector3 dst)
+    /// <returns>高さの差を考慮しない2乗距離</returns>
+    public float SqrDistanceXZ(Vector3 src, Vector3 dst)
     {
         src.y = dst.y;
-        return Vector3.Distance(src, dst);
+        return (src - dst).sqrMagnitude;
     }
 
     void Awake()
@@ -110,7 +110,7 @@ public class pMove : MonoBehaviour
                 if (spd > walkSpeed /* * Time.deltaTime */) spd = walkSpeed /* * Time.deltaTime */;
 
                 // ゴール距離がスピードダウンより近い場合、角度の違いの分、前進速度を比例減速する
-                if (DistanceXZ(destination, transform.position) < speedDownDistance)
+                if (SqrDistanceXZ(destination, transform.position) < speedDownDistance * speedDownDistance)
                 {
                     spd *= (1f - (Mathf.Abs(angle) / turnAngle));
                 }

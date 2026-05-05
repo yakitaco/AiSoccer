@@ -147,12 +147,12 @@ public class BallCtl : MonoBehaviour
 	{
 	    Vector2 startPos    = new Vector2( transform.position.x, transform.position.z );
 	    Vector2 targetPos   = new Vector2( pos.x, pos.z );
-	    float distance      = Vector2.Distance( targetPos, startPos );
+	    float sqrDistance   = (targetPos - startPos).sqrMagnitude;
 	    
-	    if (distance < 10.0f){
+	    if (sqrDistance < 100.0f){
 		    // とりあえず適当に60度でかっ飛ばすとするよ！
 		    ShootFixedAngle( pos, 15.0f );
-	    } else if (distance < 25.0f){
+	    } else if (sqrDistance < 625.0f){
 	    	ShootFixedAngle( pos, 30.0f );
 	    } else {
 	    	ShootFixedAngle( pos, 45.0f );

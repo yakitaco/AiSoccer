@@ -69,12 +69,12 @@ public class AiTeamCtl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float minDis = 99999.0f;
+        float minSqrDis = 9999999.0f;
         int nearestPlayer = 0;
         for(int i=0 ; i < players.Length ; i++){
-			float dis = Vector3.Distance( ball.GetComponent<BallCtl>().targetPos, players[i].transform.position);
-			if( dis < minDis ) {
-				minDis = dis;
+			float sqrDis = (ball.GetComponent<BallCtl>().targetPos - players[i].transform.position).sqrMagnitude;
+			if( sqrDis < minSqrDis ) {
+				minSqrDis = sqrDis;
 				nearestPlayer = i;
 			}
 			if (i == 0){ //GKポジション
@@ -82,7 +82,7 @@ public class AiTeamCtl : MonoBehaviour
 					if (prePosFlg == true){
 						tgtPos[i] = Tpos2Wpos(basePos[i] - new Vector3(0.0f,0.0f,0.0f));
 						//Debug.Log("GKDist:" + Vector3.Distance( Tpos2Wpos(basePos[i] - new Vector3(0.0f,0.0f,0.0f)), players[i].transform.position));
-						if (Vector3.Distance( Tpos2Wpos(basePos[i] - new Vector3(0.0f,0.0f,0.0f)), players[i].transform.position)<2.0f) prePosFlg = false;
+						if ((Tpos2Wpos(basePos[i] - new Vector3(0.0f,0.0f,0.0f)) - players[i].transform.position).sqrMagnitude < 4.0f) prePosFlg = false;
 					} else {
 						tgtPos[i] = Tpos2Wpos(basePos[i] + new Vector3(2.0f,0.0f,0.0f));
 					}
@@ -93,7 +93,7 @@ public class AiTeamCtl : MonoBehaviour
 				
 			} else {
 				tgtPos[i] = Tpos2Wpos(basePos[i] + (GameManager.isBallTeamId() == teamId? atkPos[i]: Vector3.zero)) + new Vector3(ball.GetComponent<BallCtl>().targetPos.x/2.5f,0.0f,ball.GetComponent<BallCtl>().targetPos.z/2.5f);
-				if ((!GameManager.isInplay())&&(Vector3.Distance( ball.GetComponent<BallCtl>().targetPos, tgtPos[i])< 10.0f)){
+				if ((!GameManager.isInplay())&&((ball.GetComponent<BallCtl>().targetPos - tgtPos[i]).sqrMagnitude < 100.0f)){
 					Vector3 vec = ( ball.GetComponent<BallCtl>().targetPos - tgtPos[i] ).normalized;
 					tgtPos[i] = new Vector3(ball.GetComponent<BallCtl>().targetPos.x - vec.x*7.0f,0.0f,ball.GetComponent<BallCtl>().targetPos.z - vec.z * 7.0f);
 				}

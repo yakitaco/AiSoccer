@@ -72,7 +72,6 @@ public class AIMove : MonoBehaviour {
 	}
 
 	void Update () {
-	
 		if (AiTeam != null){
 			//agent.SetDestination(AiTeam.tgtPos[AInum]);
 			//sendObject.SetDestination(AiTeam.tgtPos[AInum]);
@@ -85,17 +84,18 @@ public class AIMove : MonoBehaviour {
 			} else if ((stamina < staminaMax)&&(rb.linearVelocity.magnitude < 2.0f)) {
 				stamina += 2.5f - rb.linearVelocity.magnitude;
 			}
-			
-			if ((Vector3.Distance( ball.GetComponent<BallCtl>().targetPos, AiTeam.tgtPos[AInum])> 20.0f)&&(stamina < 300.0f)&&(stamina/staminaMax < 0.9f)) {
+
+			float sqrDistToTarget = (ball.GetComponent<BallCtl>().targetPos - AiTeam.tgtPos[AInum]).sqrMagnitude;
+			if ((sqrDistToTarget > 400.0f)&&(stamina < 300.0f)&&(stamina/staminaMax < 0.9f)) {
 				pM.setSpeed(0.0f);
-			} else if (Vector3.Distance( ball.GetComponent<BallCtl>().targetPos, AiTeam.tgtPos[AInum])> 30.0f){
+			} else if (sqrDistToTarget > 900.0f){
 				pM.setSpeed(1.0f);
-			} else if ((Vector3.Distance( ball.GetComponent<BallCtl>().targetPos, AiTeam.tgtPos[AInum])> 15.0f)||(stamina < 0.0f)) {
+			} else if ((sqrDistToTarget > 225.0f)||(stamina < 0.0f)) {
 				pM.setSpeed(2.0f);
 			} else {
 				pM.setSpeed(4.0f);
 			}
-			dist = Vector3.Distance( ball.GetComponent<BallCtl>().targetPos, AiTeam.tgtPos[AInum]);
+			dist = Mathf.Sqrt(sqrDistToTarget);
 			
 			stmSlider.value = stamina;
 			stmMaxSlider.value = staminaMax;
@@ -120,7 +120,7 @@ public class AIMove : MonoBehaviour {
 		}
 		
 	}
-	
+
 	//初期設定
 	public void SetInit (AiTeamCtl _AiTeam, int _Ainum,int _Number, string name, GameObject unit, float _stamina, float _fatiguex)
 	{
@@ -201,7 +201,7 @@ public class AIMove : MonoBehaviour {
 		        if (( AiTeam.Wpos2Tpos(other.gameObject.transform.position).x > 25.0f )&&(dir > -45.0f)&&(dir < 45.0f)){
 		        	//Debug.Log("Shoot:" + AiTeam.getWgpos());
 		        	other.gameObject.GetComponent<BallCtl>().ShootByTime(AiTeam.getWgpos() + AiTeam.Wpos2Tpos(new Vector3(Random.Range(-3.0f, 5.0f), Random.Range(-2.0f, 2.0f), Random.Range(-5.0f, 5.0f))), 0.0f);
-		    	} else if ((checkCloseEnemy(transform.position) < 7.0f)||((AiTeam.Wpos2Tpos(other.gameObject.transform.position).x < -20.0f)&&(checkCloseEnemy(transform.position) < 10.0f))) {
+		    	} else if ((checkCloseEnemy(transform.position) < 49.0f)||((AiTeam.Wpos2Tpos(other.gameObject.transform.position).x < -20.0f)&&(checkCloseEnemy(transform.position) < 100.0f))) {
 
 		        	var tgtObj = chkOptPass(AiTeam.players, 5.0f, 30.0f); //味方を探す
 		        	if (tgtObj == null){
@@ -281,12 +281,15 @@ public class AIMove : MonoBehaviour {
 	//最適なパス出し先を選択
 	GameObject chkOptPass(GameObject[] list, float minDist, float maxDist){
 		GameObject tgtObj = null;
+        float sqrMinDist = minDist * minDist;
+        float sqrMaxDist = maxDist * maxDist;
+
 		foreach(var obj in list){
 			if ((this != obj)&&((AiTeam.Wpos2Tpos(this.gameObject.transform.position).x < 0.0f)||(AiTeam.Wpos2Tpos(obj.gameObject.transform.position).x > 0.0f))){
 				var dir = getRelativeDir(obj.transform.position);
 		        if ((dir > -90.0f)&&(dir < 90.0f)){
-		        	float dis = Vector3.Distance( transform.position, obj.transform.position);
-		        	if ((dis > minDist)&&(dis < maxDist)&&(checkCloseEnemy(obj.transform.position)> 5.0f)){
+		        	float sqrDis = (transform.position - obj.transform.position).sqrMagnitude;
+		        	if ((sqrDis > sqrMinDist)&&(sqrDis < sqrMaxDist)&&(checkCloseEnemy(obj.transform.position)> 25.0f)){
 						tgtObj = obj;
 						//Debug.Log("AAA:" + obj.transform.position + "/" + transform.position);
 					}
