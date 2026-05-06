@@ -28,7 +28,7 @@ public class BallKick : MonoBehaviour
     //        //other.gameObject.GetComponent<Rigidbody>().AddForce (transform.forward * Random.Range(KickPowMin, KickPowMax) + new Vector3(0.0f, Random.Range(YupMin, YupMax), 0.0f));
     //        //GetComponent<Rigidbody>().velocity = Vector3.zero;
 	//		//GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-	//		other.gameObject.GetComponent<BallCtl>().ShootByTime(Vector3.zero, 0.0f);
+	//		other.gameObject.GetComponent<BallCtl>().KickToTarget(Vector3.zero, 0.0f);
     //    }
 	//}
     

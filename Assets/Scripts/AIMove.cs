@@ -115,7 +115,7 @@ public class AIMove : MonoBehaviour {
 				forceKick = true;
 				GameManager.doGKCatch(false);
 				GkCoroutine = null;
-				ball.gameObject.GetComponent<BallCtl>().ShootByTime(transform.position + transform.forward * 1.0f, 0.0f);
+				ball.gameObject.GetComponent<BallCtl>().KickToTarget(transform.position + transform.forward * 1.0f, 0.0f);
 			}
 		}
 		
@@ -158,10 +158,10 @@ public class AIMove : MonoBehaviour {
 	    	if (GameManager.isKick()){ //キックフラグON
 	    		var tgtObj = chkOptPass(AiTeam.players, 10.0f, 50.0f);
 		        if (tgtObj != null){
-	    			other.gameObject.GetComponent<BallCtl>().ShootByTime(tgtObj.transform.position + tgtObj.transform.forward * tgtObj.GetComponent<Rigidbody>().linearVelocity.magnitude * 5.0f, 0.0f);
+	    			other.gameObject.GetComponent<BallCtl>().KickToTarget(tgtObj.transform.position + tgtObj.transform.forward * tgtObj.GetComponent<Rigidbody>().linearVelocity.magnitude * 5.0f, 0.0f);
 					Debug.Log("BYBYBY:" + AiTeam.getWgpos());
 	    		} else {
-	    			other.gameObject.GetComponent<BallCtl>().ShootByTime(AiTeam.getWgpos(), 0.0f);
+	    			other.gameObject.GetComponent<BallCtl>().KickToTarget(AiTeam.getWgpos(), 0.0f);
 	    			Debug.Log("GAGAGA:" + AiTeam.getWgpos());
 	    		}
 	    		transform.position -= transform.forward * 0.1f; // 少し後ろにずれないと正確に蹴れない？？？
@@ -172,20 +172,20 @@ public class AIMove : MonoBehaviour {
 		        if ((dir > -90.0f)&&(dir < 90.0f)){
 		    		var tgtObj = chkOptPass(AiTeam.players, 10.0f, 50.0f);
 			        if (tgtObj != null){
-		    			other.gameObject.GetComponent<BallCtl>().ShootByTime(tgtObj.transform.position + tgtObj.transform.forward * tgtObj.GetComponent<Rigidbody>().linearVelocity.magnitude * 5.0f, 0.0f);
+		    			other.gameObject.GetComponent<BallCtl>().KickToTarget(tgtObj.transform.position + tgtObj.transform.forward * tgtObj.GetComponent<Rigidbody>().linearVelocity.magnitude * 5.0f, 0.0f);
 		    		} else {
-		    			other.gameObject.GetComponent<BallCtl>().ShootByTime(AiTeam.getWgpos(), 0.0f);
+		    			other.gameObject.GetComponent<BallCtl>().KickToTarget(AiTeam.getWgpos(), 0.0f);
 		    		}
 		    		forceKick = false;
 		        } else {
 			        if (dir < -60.0f){
 			        	dir = -60.0f;
-			        	other.gameObject.GetComponent<BallCtl>().ShootByTime(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 2.0f, 0.0f);
+			        	other.gameObject.GetComponent<BallCtl>().KickToTarget(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 2.0f, 0.0f);
 			        } else if (dir > 60.0f){
 			        	dir = 60.0f;
-			        	other.gameObject.GetComponent<BallCtl>().ShootByTime(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 2.0f, 0.0f);
+			        	other.gameObject.GetComponent<BallCtl>().KickToTarget(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 2.0f, 0.0f);
 			        } else {
-		        		other.gameObject.GetComponent<BallCtl>().ShootByTime(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 3.0f, 0.0f);
+		        		other.gameObject.GetComponent<BallCtl>().KickToTarget(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 3.0f, 0.0f);
 		        	}
 		        }
 	    	} else if (( AInum == 0)&&( AiTeam.teamId != GameManager.isBallTeamId() )&&(AiTeam.Wpos2Tpos(other.gameObject.transform.position).x < -30.0f)) {  //GKの場合
@@ -200,48 +200,50 @@ public class AIMove : MonoBehaviour {
 		        var dir = getRelativeDir(AiTeam.getWgpos());
 		        if (( AiTeam.Wpos2Tpos(other.gameObject.transform.position).x > 25.0f )&&(dir > -45.0f)&&(dir < 45.0f)){
 		        	//Debug.Log("Shoot:" + AiTeam.getWgpos());
-		        	other.gameObject.GetComponent<BallCtl>().ShootByTime(AiTeam.getWgpos() + AiTeam.Wpos2Tpos(new Vector3(Random.Range(-3.0f, 5.0f), Random.Range(-2.0f, 2.0f), Random.Range(-5.0f, 5.0f))), 0.0f);
+		        	other.gameObject.GetComponent<BallCtl>().KickToTarget(AiTeam.getWgpos() + AiTeam.Wpos2Tpos(new Vector3(Random.Range(-3.0f, 5.0f), Random.Range(-2.0f, 2.0f), Random.Range(-5.0f, 5.0f))), 0.0f);
 		    	} else if ((checkCloseEnemy(transform.position) < 49.0f)||((AiTeam.Wpos2Tpos(other.gameObject.transform.position).x < -20.0f)&&(checkCloseEnemy(transform.position) < 100.0f))) {
 
 		        	var tgtObj = chkOptPass(AiTeam.players, 5.0f, 30.0f); //味方を探す
 		        	if (tgtObj == null){
+		        	    Debug.Log("tgtObj is NULL !!");
 		        	    if (AiTeam.Wpos2Tpos(other.gameObject.transform.position).x < 0.0f){ // 自陣の場合はクリア優先
 		        	    	StartCoroutine("stepStop");
 					    	if (dir < -90.0f){
-					    		other.gameObject.GetComponent<BallCtl>().ShootByTime(transform.position + Quaternion.Euler(new Vector3(0.0f, -90.0f, 0.0f)) * transform.forward * 50.0f, 0.0f);
+					    		other.gameObject.GetComponent<BallCtl>().KickToTarget(transform.position + Quaternion.Euler(new Vector3(0.0f, -90.0f, 0.0f)) * transform.forward * 50.0f, 0.0f);
 					    	} else if (dir > 90.0f){
-					    		other.gameObject.GetComponent<BallCtl>().ShootByTime(transform.position + Quaternion.Euler(new Vector3(0.0f,  90.0f, 0.0f)) * transform.forward * 50.0f, 0.0f);
+					    		other.gameObject.GetComponent<BallCtl>().KickToTarget(transform.position + Quaternion.Euler(new Vector3(0.0f,  90.0f, 0.0f)) * transform.forward * 50.0f, 0.0f);
 					    	} else {
-					    		other.gameObject.GetComponent<BallCtl>().ShootByTime(AiTeam.getWgpos(), 0.0f);
+					    		other.gameObject.GetComponent<BallCtl>().KickToTarget(AiTeam.getWgpos(), 0.0f);
 					    	}
-					    	//Debug.Log("Clear:" + AiTeam.getWgpos());
+					    	Debug.Log("Clear:" + AiTeam.getWgpos());
 				    	} else { // 敵陣の場合はドリブル突破を図る
 				        	if (dir < -60.0f){
 				        		dir = -60.0f;
-				        		other.gameObject.GetComponent<BallCtl>().ShootByTime(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 2.0f, 0.0f);
+				        		other.gameObject.GetComponent<BallCtl>().KickToTarget(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 2.0f, 0.0f);
 				        	} else if (dir > 60.0f){
 				        		dir = 60.0f;
-				        		other.gameObject.GetComponent<BallCtl>().ShootByTime(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 2.0f, 0.0f);
+				        		other.gameObject.GetComponent<BallCtl>().KickToTarget(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 2.0f, 0.0f);
 				        	} else {
 				        		dir = Random.Range(-60.0f, 60.0f);
-			        			other.gameObject.GetComponent<BallCtl>().ShootByTime(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 3.0f, 0.0f);
+			        			other.gameObject.GetComponent<BallCtl>().KickToTarget(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 3.0f, 0.0f);
 			        		}
 			        		//Debug.Log("Dribble:" + AiTeam.getWgpos());
 				    	}
 		        	} else {
 		        		StartCoroutine("stepStop");
-		        		other.gameObject.GetComponent<BallCtl>().ShootByTime(tgtObj.transform.position + tgtObj.transform.forward * tgtObj.GetComponent<Rigidbody>().linearVelocity.magnitude * 5.0f, 0.0f);
+		        		other.gameObject.GetComponent<BallCtl>().KickToTarget(tgtObj.transform.position + tgtObj.transform.forward * tgtObj.GetComponent<Rigidbody>().linearVelocity.magnitude * 5.0f, 0.0f);
 		        	}
 	        	} else {
+	            	Debug.Log("tgtObj is EXIST !!");
 		        	//if (other.gameObject.GetComponent<Rigidbody>().velocity.magnitude < 5.0f ){
 			        	if (dir < -60.0f){
 			        		dir = -60.0f;
-			        		other.gameObject.GetComponent<BallCtl>().ShootByTime(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 2.0f, 0.0f);
+			        		other.gameObject.GetComponent<BallCtl>().KickToTarget(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 2.0f, 0.0f);
 			        	} else if (dir > 60.0f){
 			        		dir = 60.0f;
-			        		other.gameObject.GetComponent<BallCtl>().ShootByTime(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 2.0f, 0.0f);
+			        		other.gameObject.GetComponent<BallCtl>().KickToTarget(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 2.0f, 0.0f);
 			        	} else {
-		        			other.gameObject.GetComponent<BallCtl>().ShootByTime(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 2.0f, 0.0f);
+		        			other.gameObject.GetComponent<BallCtl>().KickToTarget(transform.position + Quaternion.Euler(new Vector3(0.0f, dir, 0.0f)) * transform.forward * 2.0f, 0.0f);
 		        		}
 		        	//}
 	        	}
@@ -263,9 +265,9 @@ public class AIMove : MonoBehaviour {
 			if (keepTouch > 20){ //強制聞く
 	    		var tgtObj = chkOptPass(AiTeam.players, 10.0f, 50.0f);
 		        if (tgtObj != null){
-	    			other.gameObject.GetComponent<BallCtl>().ShootByTime(tgtObj.transform.position + tgtObj.transform.forward * 3.0f, 0.0f);
+	    			other.gameObject.GetComponent<BallCtl>().KickToTarget(tgtObj.transform.position + tgtObj.transform.forward * 3.0f, 0.0f);
 	    		} else {
-	    			other.gameObject.GetComponent<BallCtl>().ShootByTime(AiTeam.getWgpos(), 0.0f);
+	    			other.gameObject.GetComponent<BallCtl>().KickToTarget(AiTeam.getWgpos(), 0.0f);
 	    		}
 	    		forceKick = false;
 	    		GameManager.doKick();
@@ -335,7 +337,7 @@ public class AIMove : MonoBehaviour {
 		    GameManager.doGKCatch(false);
 		    ball.gameObject.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
 		    ball.gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-		    ball.gameObject.GetComponent<BallCtl>().ShootByTime(transform.position + transform.forward * 1.0f, 0.0f);
+		    ball.gameObject.GetComponent<BallCtl>().KickToTarget(transform.position + transform.forward * 1.0f, 0.0f);
 		    forceKick = true;
 	    }
 	}
